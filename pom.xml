@@ -609,15 +609,15 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         </dependency>
 
         <dependency>
-            <groupId>org.rutebanken.helpers</groupId>
+            <groupId>org.entur.helpers</groupId>
             <artifactId>hazelcast-helper</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.rutebanken.helpers</groupId>
+            <groupId>org.entur.helpers</groupId>
             <artifactId>jms-batch</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.rutebanken.helpers</groupId>
+            <groupId>org.entur.helpers</groupId>
             <artifactId>organisation</artifactId>
         </dependency>
     </dependencies>
