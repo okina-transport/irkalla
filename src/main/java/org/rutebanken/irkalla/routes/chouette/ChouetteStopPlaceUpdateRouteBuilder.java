@@ -52,7 +52,7 @@ public class ChouetteStopPlaceUpdateRouteBuilder extends BaseRouteBuilder {
     @Value("${chouette.sync.stop.place.retry.delay:15000}")
     private int retryDelay;
 
-    @Value("${chouette.sync.stop.place.grace.ms:60000}")
+    @Value("${chouette.sync.stop.place.grace.ms:30000}")
     private int graceMilliseconds;
 
 
