@@ -20,7 +20,6 @@ import org.rutebanken.irkalla.routes.tiamat.StopPlaceChange;
 import org.rutebanken.irkalla.routes.tiamat.graphql.model.GraphqlGeometry;
 import org.rutebanken.irkalla.routes.tiamat.graphql.model.StopPlace;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ObjectUtils;
 import org.wololo.geojson.Geometry;
 import org.wololo.geojson.Point;
 

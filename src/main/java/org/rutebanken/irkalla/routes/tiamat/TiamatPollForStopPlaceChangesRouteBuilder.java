@@ -18,18 +18,18 @@ package org.rutebanken.irkalla.routes.tiamat;
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
 import org.apache.camel.component.http4.HttpMethods;
-import org.glassfish.jersey.uri.internal.JerseyUriBuilder;
+import org.apache.http.client.utils.URIBuilder;
 import org.rutebanken.irkalla.Constants;
 import org.rutebanken.irkalla.routes.BaseRouteBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import javax.ws.rs.core.UriBuilder;
+import java.net.URISyntaxException;
 import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
-import static org.rutebanken.irkalla.Constants.*;
+import static org.rutebanken.irkalla.Constants.HEADER_NEXT_BATCH_URL;
 import static org.rutebanken.irkalla.util.Http4URL.toHttp4Url;
 
 @Component
@@ -84,28 +84,28 @@ public class TiamatPollForStopPlaceChangesRouteBuilder extends BaseRouteBuilder 
 
     }
 
-    private void setPollForChangesURL(Exchange e) {
+    private void setPollForChangesURL(Exchange e) throws URISyntaxException {
         Long fromAsEpocMillis = e.getIn().getHeader(Constants.HEADER_SYNC_STATUS_FROM, Long.class);
         Long toAsEpocMillis = e.getIn().getHeader(Constants.HEADER_SYNC_STATUS_TO, Long.class);
 
-        UriBuilder uriBuilder = new JerseyUriBuilder().path(toHttp4Url(tiamatUrl) + publicationDeliveryPath);
+        URIBuilder uriBuilder = new URIBuilder(toHttp4Url(tiamatUrl) + publicationDeliveryPath);
 
-        uriBuilder.queryParam("topographicPlaceExportMode", "NONE");
-        uriBuilder.queryParam("tariffZoneExportMode", "NONE");
+        uriBuilder.addParameter("topographicPlaceExportMode", "NONE");
+        uriBuilder.addParameter("tariffZoneExportMode", "NONE");
 
         if (fromAsEpocMillis != null) {
             Instant from = Instant.ofEpochMilli(fromAsEpocMillis);
-            uriBuilder.queryParam("from", from.atZone(TIME_ZONE_ID).format(FORMATTER));
+            uriBuilder.addParameter("from", from.atZone(TIME_ZONE_ID).format(FORMATTER));
         }
         if (toAsEpocMillis != null) {
             Instant to = Instant.ofEpochMilli(toAsEpocMillis);
-            uriBuilder.queryParam("to", to.atZone(TIME_ZONE_ID).format(FORMATTER));
+            uriBuilder.addParameter("to", to.atZone(TIME_ZONE_ID).format(FORMATTER));
         }
         if (batchSize > 0) {
-            uriBuilder.queryParam("per_page", batchSize);
+            uriBuilder.addParameter("per_page", String.valueOf(batchSize));
         }
 
-        e.getIn().setHeader(HEADER_NEXT_BATCH_URL, uriBuilder.build().toString());
+        e.getIn().setHeader(HEADER_NEXT_BATCH_URL, uriBuilder.toString());
     }
 
 

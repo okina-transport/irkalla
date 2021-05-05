@@ -32,8 +32,12 @@ import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
 
-import static org.apache.camel.management.mbean.Statistic.UpdateMode.DELTA;
-import static org.rutebanken.irkalla.Constants.*;
+import static org.rutebanken.irkalla.Constants.HEADER_NEXT_BATCH_URL;
+import static org.rutebanken.irkalla.Constants.HEADER_SYNC_OPERATION;
+import static org.rutebanken.irkalla.Constants.HEADER_SYNC_STATUS_TO;
+import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_DELTA;
+import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_FULL;
+import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_FULL_WITH_DELETE_UNUSED_FIRST;
 import static org.rutebanken.irkalla.util.Http4URL.toHttp4Url;
 
 @Component
@@ -63,7 +67,7 @@ public class ChouetteStopPlaceUpdateRouteBuilder extends BaseRouteBuilder {
         from("quartz2://irkalla/stopPlaceDeltaSync?cron=" + deltaSyncCronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{chouette.sync.stop.place.autoStartup:true}}")
                 .log(LoggingLevel.DEBUG, "Quartz triggers delta sync of changed stop places.")
-                .setHeader(HEADER_SYNC_OPERATION, constant(DELTA))
+                .setHeader(HEADER_SYNC_OPERATION, constant("DELTA"))
                 .inOnly("activemq:queue:ChouetteStopPlaceSyncQueue")
                 .routeId("chouette-synchronize-stop-places-delta-quartz");
 

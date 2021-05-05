@@ -28,10 +28,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.ws.rs.NotFoundException;
 import java.util.Collections;
 
-import static org.rutebanken.irkalla.Constants.*;
+import static org.rutebanken.irkalla.Constants.HEADER_SYNC_OPERATION;
+import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_DELTA;
+import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_FULL;
+import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_FULL_WITH_DELETE_UNUSED_FIRST;
 
 @Component
 public class AdminRestRouteBuilder extends BaseRouteBuilder {
@@ -62,12 +64,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .setHeader(Exchange.CONTENT_TYPE, constant("text/plain"))
                 .transform(exceptionMessage());
 
-        onException(NotFoundException.class)
-                .handled(true)
-                .setHeader(Exchange.HTTP_RESPONSE_CODE, constant(404))
-                .setHeader(Exchange.CONTENT_TYPE, constant("text/plain"))
-                .transform(exceptionMessage());
-
         RestPropertyDefinition corsAllowedHeaders = new RestPropertyDefinition();
         corsAllowedHeaders.setKey("Access-Control-Allow-Headers");
         corsAllowedHeaders.setValue("Origin, Accept, X-Requested-With, Content-Type, Access-Control-Request-Method, Access-Control-Request-Headers, Authorization");
@@ -89,15 +85,6 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .apiProperty("api.title", "Stop place synchronization timetable API")
                 .apiProperty("api.description", "Administration of process for synchronizing stop places in the timetable database (Chouette) with the master data in the stop place registry (NSR)")
                 .apiProperty("api.version", "1.0");
-
-        rest("")
-                .apiDocs(false)
-                .description("Wildcard definitions necessary to get Jetty to match authorization filters to endpoints with path params")
-                .get().route().routeId("admin-route-authorize-get").throwException(new NotFoundException()).endRest()
-                .post().route().routeId("admin-route-authorize-post").throwException(new NotFoundException()).endRest()
-                .put().route().routeId("admin-route-authorize-put").throwException(new NotFoundException()).endRest()
-                .delete().route().routeId("admin-route-authorize-delete").throwException(new NotFoundException()).endRest();
-
 
         rest("/stop_place_synchronization_timetable")
                 .get("/status")

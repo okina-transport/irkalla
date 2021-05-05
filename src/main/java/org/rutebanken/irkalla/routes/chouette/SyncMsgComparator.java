@@ -21,7 +21,10 @@ import org.rutebanken.irkalla.IrkallaException;
 import java.io.IOException;
 import java.util.Comparator;
 
-import static org.rutebanken.irkalla.Constants.*;
+import static org.rutebanken.irkalla.Constants.HEADER_NEXT_BATCH_URL;
+import static org.rutebanken.irkalla.Constants.HEADER_SYNC_OPERATION;
+import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_FULL;
+import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_FULL_WITH_DELETE_UNUSED_FIRST;
 
 public class SyncMsgComparator implements Comparator<ActiveMQMessage> {
 

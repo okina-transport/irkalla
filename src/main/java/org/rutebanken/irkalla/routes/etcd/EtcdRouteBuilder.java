@@ -20,7 +20,6 @@ import org.apache.camel.LoggingLevel;
 import org.apache.camel.component.http4.HttpMethods;
 import org.apache.camel.http.common.HttpOperationFailedException;
 import org.apache.camel.model.dataformat.JsonLibrary;
-import org.rutebanken.irkalla.IrkallaException;
 import org.rutebanken.irkalla.routes.BaseRouteBuilder;
 import org.rutebanken.irkalla.routes.etcd.json.EtcdResponse;
 import org.springframework.beans.factory.annotation.Value;
