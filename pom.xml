@@ -29,7 +29,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
 
     <groupId>org.rutebanken.irkalla</groupId>
     <artifactId>irkalla</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
+    <version>1.0.0-mobi-iti-SNAPSHOT</version>
 
     <name>irkalla</name>
     <description>Config management</description>
