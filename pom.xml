@@ -20,9 +20,9 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
-        <groupId>org.rutebanken.superpom</groupId>
+        <groupId>com.okina.springboot</groupId>
         <artifactId>superpom</artifactId>
-        <version>0.0.6</version>
+        <version>1.0.1-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -67,7 +67,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         <keycloak.version>3.2.1.Final</keycloak.version>
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <jetty.version>9.4.6.v20170531</jetty.version>
-        <rutebanken.helpers.version>0.0.3-SNAPSHOT</rutebanken.helpers.version>
+        <okina.helpers.version>1.0.24-SNAPSHOT</okina.helpers.version>
         <camel.version>2.19.2</camel.version>
     </properties>
 
@@ -255,20 +255,20 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
             </dependency>
 
             <dependency>
-                <groupId>org.entur.helpers</groupId>
+                <groupId>com.okina.helpers</groupId>
                 <artifactId>hazelcast-helper</artifactId>
-                <version>${rutebanken.helpers.version}</version>
+                <version>${okina.helpers.version}</version>
             </dependency>
 
             <dependency>
-                <groupId>org.entur.helpers</groupId>
+                <groupId>com.okina.helpers</groupId>
                 <artifactId>organisation</artifactId>
-                <version>${rutebanken.helpers.version}</version>
+                <version>${okina.helpers.version}</version>
             </dependency>
             <dependency>
-                <groupId>org.entur.helpers</groupId>
+                <groupId>com.okina.helpers</groupId>
                 <artifactId>jms-batch</artifactId>
-                <version>${rutebanken.helpers.version}</version>
+                <version>${okina.helpers.version}</version>
             </dependency>
 
 
@@ -609,15 +609,15 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         </dependency>
 
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>com.okina.helpers</groupId>
             <artifactId>hazelcast-helper</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>com.okina.helpers</groupId>
             <artifactId>jms-batch</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.entur.helpers</groupId>
+            <groupId>com.okina.helpers</groupId>
             <artifactId>organisation</artifactId>
         </dependency>
     </dependencies>
