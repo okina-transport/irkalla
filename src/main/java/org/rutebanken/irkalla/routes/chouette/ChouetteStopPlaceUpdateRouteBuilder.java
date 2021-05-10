@@ -46,7 +46,7 @@ public class ChouetteStopPlaceUpdateRouteBuilder extends BaseRouteBuilder {
     private String chouetteUrl;
 
 
-    @Value("${chouette.sync.stop.place.cron:0 0/5 * * * ?}")
+    @Value("${chouette.sync.stop.place.cron:0 * * * * ?}")
     private String deltaSyncCronSchedule;
 
     @Value("${chouette.sync.stop.place.full.cron:0 0 2 * * ?}")
