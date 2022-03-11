@@ -90,12 +90,14 @@ public class IrkallaSecurityConfiguration extends KeycloakWebSecurityConfigurerA
         RequestMatcher requestMatcher =
                 new OrRequestMatcher(new RequestHeaderRequestMatcher(AUTHORIZATION_HEADER), tokenQueryParamMatcher);
 
-        KeycloakAuthenticationProcessingFilter filter = new KeycloakAuthenticationProcessingFilter(authenticationManagerBean(), requestMatcher) {
-            @Override
-            protected boolean isBearerTokenRequest(HttpServletRequest request) {
-                return super.isBearerTokenRequest(request) || tokenQueryParamMatcher.matches(request);
-            }
-        };
+        KeycloakAuthenticationProcessingFilter filter = new KeycloakAuthenticationProcessingFilter(authenticationManagerBean(), requestMatcher);
+
+        //{
+//            @Override
+//            protected boolean isBearerTokenRequest(HttpServletRequest request) {
+//                return super.isBearerTokenRequest(request) || tokenQueryParamMatcher.matches(request);
+//            }
+  //      };
 
         filter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy());
         return filter;
