@@ -29,7 +29,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
 
     <groupId>org.rutebanken.irkalla</groupId>
     <artifactId>irkalla</artifactId>
-    <version>1.0.0-mobi-iti-SNAPSHOT-CRONMINUTE</version>
+    <version>1.0.2-mobi-iti-SNAPSHOT-CRONMINUTE</version>
 
     <name>irkalla</name>
     <description>Config management</description>
@@ -44,8 +44,8 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
 
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
         <docker.maven.plugin.version>0.21.0</docker.maven.plugin.version>
-        <spring-boot-plugin.version>1.5.6.RELEASE</spring-boot-plugin.version>
-        <spring-boot.version>1.5.6.RELEASE</spring-boot.version>
+        <spring-boot-plugin.version>2.0.3.RELEASE</spring-boot-plugin.version>
+        <spring-boot.version>2.0.3.RELEASE</spring-boot.version>
 
         <!-- Docker & Fabric8 Configs -->
         <docker.from>registry.okina.fr/okina/java-base-image</docker.from>
@@ -64,15 +64,32 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
         <docker.port.container.jolokia>8080</docker.port.container.jolokia>
         <fabric8.version>2.3.4</fabric8.version>
-        <keycloak.version>3.2.1.Final</keycloak.version>
+        <keycloak.version>4.1.0.Final</keycloak.version>
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <jetty.version>9.4.6.v20170531</jetty.version>
-        <okina.helpers.version>1.0.24-SNAPSHOT</okina.helpers.version>
-        <camel.version>2.19.2</camel.version>
+        <okina.helpers.version>1.0.24</okina.helpers.version>
+        <camel.version>2.22.0</camel.version>
+        <hazelcast-version>4.1.8</hazelcast-version>
+        <camel-hazelcast-version>3.9.0</camel-hazelcast-version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-core</artifactId>
+                <version>${camel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.camel</groupId>
+                <artifactId>camel-hazelcast</artifactId>
+                <version>${camel-hazelcast-version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.hazelcast</groupId>
+                <artifactId>hazelcast</artifactId>
+                <version>${hazelcast-version}</version>
+            </dependency>
             <dependency>
                 <!-- Import dependency management from Spring Boot -->
                 <groupId>org.springframework.boot</groupId>
@@ -256,8 +273,14 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
 
             <dependency>
                 <groupId>com.okina.helpers</groupId>
-                <artifactId>hazelcast-helper</artifactId>
+                <artifactId>hazelcast4-helper</artifactId>
                 <version>${okina.helpers.version}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.hazelcast</groupId>
+                        <artifactId>hazelcast</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
@@ -278,11 +301,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
                 <version>${camel.version}</version>
             </dependency>
 
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-core</artifactId>
-                <version>${camel.version}</version>
-            </dependency>
+
             <dependency>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-http4</artifactId>
@@ -352,11 +371,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
                 <artifactId>activemq-camel</artifactId>
                 <version>5.13.4</version>
             </dependency>
-            <dependency>
-                <groupId>org.apache.camel</groupId>
-                <artifactId>camel-hazelcast</artifactId>
-                <version>${camel.version}</version>
-            </dependency>
+
 
             <dependency>
                 <groupId>org.apache.camel</groupId>
@@ -375,7 +390,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
             </dependency>
             <dependency>
                 <groupId>org.keycloak</groupId>
-                <artifactId>keycloak-spring-boot-adapter</artifactId>
+                <artifactId>keycloak-spring-boot-2-adapter</artifactId>
                 <version>${keycloak.version}</version>
             </dependency>
             <dependency>
@@ -419,6 +434,19 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
     </dependencyManagement>
 
     <dependencies>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.camel</groupId>
+            <artifactId>camel-hazelcast</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.hazelcast</groupId>
+            <artifactId>hazelcast</artifactId>
+            <version>${hazelcast-version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
@@ -500,10 +528,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
             <artifactId>camel-spring</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.camel</groupId>
-            <artifactId>camel-core</artifactId>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-http4</artifactId>
@@ -565,11 +590,6 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
-            <artifactId>camel-hazelcast</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.camel</groupId>
             <artifactId>camel-quartz2</artifactId>
         </dependency>
         <dependency>
@@ -582,7 +602,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
-            <artifactId>keycloak-spring-boot-adapter</artifactId>
+            <artifactId>keycloak-spring-boot-2-adapter</artifactId>
         </dependency>
         <dependency>
             <groupId>com.graphql-java</groupId>
@@ -610,7 +630,8 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
 
         <dependency>
             <groupId>com.okina.helpers</groupId>
-            <artifactId>hazelcast-helper</artifactId>
+            <artifactId>hazelcast4-helper</artifactId>
+            <version>${okina.helpers.version}</version>
         </dependency>
         <dependency>
             <groupId>com.okina.helpers</groupId>
