@@ -19,6 +19,8 @@ import org.rutebanken.irkalla.domain.CrudAction;
 import org.rutebanken.irkalla.routes.tiamat.StopPlaceChange;
 import org.rutebanken.irkalla.routes.tiamat.StopPlaceDao;
 import org.rutebanken.irkalla.routes.tiamat.graphql.model.StopPlace;
+import org.rutebanken.irkalla.service.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -44,6 +46,9 @@ public class GraphQLStopPlaceDao implements StopPlaceDao {
 
     @Value("${tiamat.graphql.path:/services/stop_places/graphql}")
     private String tiamatGraphQLPath;
+
+    @Autowired
+    private TokenService tokenService;
 
     @Override
     public StopPlaceChange getStopPlaceChange(CrudAction crudAction, String id, Long version) {
@@ -75,6 +80,7 @@ public class GraphQLStopPlaceDao implements StopPlaceDao {
         headers.set(HttpHeaders.CONTENT_TYPE, "application/json");
         headers.set(ET_CLIENT_NAME_HEADER, clientName);
         headers.set(ET_CLIENT_ID_HEADER, clientId);
+        headers.set("Authorization", "Bearer " + tokenService.getToken());
         return new HttpEntity<>(new StopPlaceQuery(id, version).toString(), headers);
     }
 

@@ -42,7 +42,7 @@ public class ChouetteStopPlaceDeleteRouteBuilder extends BaseRouteBuilder {
         singletonFrom("activemq:queue:ChouetteStopPlaceDeleteQueue?transacted=true")
                 .transacted()
 
-                .log(LoggingLevel.INFO, "Delete stop place ${header." + Constants.HEADER_ENTITY_ID + "} in Chouette")
+                .log(LoggingLevel.INFO, "Delete stop place ${header." + Constants.HEADER_ENTITY_ID + "} in Chouette")
                 .setBody(constant(null))
                 .removeHeaders("CamelHttp*")
                 .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.DELETE))

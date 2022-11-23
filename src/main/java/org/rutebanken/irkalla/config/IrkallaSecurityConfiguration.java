@@ -92,13 +92,6 @@ public class IrkallaSecurityConfiguration extends KeycloakWebSecurityConfigurerA
 
         KeycloakAuthenticationProcessingFilter filter = new KeycloakAuthenticationProcessingFilter(authenticationManagerBean(), requestMatcher);
 
-        //{
-//            @Override
-//            protected boolean isBearerTokenRequest(HttpServletRequest request) {
-//                return super.isBearerTokenRequest(request) || tokenQueryParamMatcher.matches(request);
-//            }
-  //      };
-
         filter.setSessionAuthenticationStrategy(sessionAuthenticationStrategy());
         return filter;
     }
