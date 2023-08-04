@@ -67,7 +67,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         <keycloak.version>4.1.0.Final</keycloak.version>
         <spring.security.version>4.2.3.RELEASE</spring.security.version>
         <jetty.version>9.4.6.v20170531</jetty.version>
-        <okina.helpers.version>1.0.24</okina.helpers.version>
+        <okina.helpers.version>1.0.28</okina.helpers.version>
         <camel.version>2.22.0</camel.version>
         <hazelcast-version>4.1.8</hazelcast-version>
         <camel-hazelcast-version>3.9.0</camel-hazelcast-version>
