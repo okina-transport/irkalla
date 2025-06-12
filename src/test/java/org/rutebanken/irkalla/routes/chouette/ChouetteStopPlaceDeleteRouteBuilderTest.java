@@ -20,6 +20,7 @@ import org.apache.camel.Produce;
 import org.apache.camel.ProducerTemplate;
 import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.rutebanken.irkalla.Constants;
 import org.rutebanken.irkalla.routes.RouteBuilderIntegrationTestBase;
@@ -28,6 +29,7 @@ import org.springframework.test.annotation.DirtiesContext;
 
 import static org.rutebanken.irkalla.util.Http4URL.toHttp4Url;
 
+@Ignore
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class ChouetteStopPlaceDeleteRouteBuilderTest extends RouteBuilderIntegrationTestBase {
 

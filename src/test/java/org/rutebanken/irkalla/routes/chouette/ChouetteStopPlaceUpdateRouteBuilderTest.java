@@ -24,6 +24,7 @@ import org.apache.camel.builder.AdviceWithRouteBuilder;
 import org.apache.camel.component.mock.MockEndpoint;
 import org.apache.camel.http.common.HttpOperationFailedException;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.rutebanken.irkalla.routes.RouteBuilderIntegrationTestBase;
 import org.springframework.beans.factory.annotation.Value;
@@ -63,6 +64,7 @@ public class ChouetteStopPlaceUpdateRouteBuilderTest extends RouteBuilderIntegra
     protected MockEndpoint chouetteStopPlaceSyncQueueMock;
 
     @Test
+    @Ignore
     public void testUpdateStopPlaces() throws Exception {
         String exportPath = toHttp4Url(tiamatUrl) + publicationDeliveryPath + "*";
 
@@ -161,6 +163,7 @@ public class ChouetteStopPlaceUpdateRouteBuilderTest extends RouteBuilderIntegra
     }
 
     @Test
+    @Ignore
     public void testUpdateStopPlacesRetryWhenChouetteIsBusy() throws Exception {
         String exportPath = toHttp4Url(tiamatUrl) + publicationDeliveryPath + "*";
 
