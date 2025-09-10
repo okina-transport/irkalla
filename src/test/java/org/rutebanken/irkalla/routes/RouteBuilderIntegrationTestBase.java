@@ -15,20 +15,31 @@
 
 package org.rutebanken.irkalla.routes;
 
-import org.apache.camel.model.ModelCamelContext;
-import org.apache.camel.test.spring.CamelSpringRunner;
-import org.apache.camel.test.spring.UseAdviceWith;
-import org.junit.runner.RunWith;
-import org.rutebanken.irkalla.IrkallaApplication;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.apache.camel.CamelContext;
 
-@RunWith(CamelSpringRunner.class)
-@UseAdviceWith
-@SpringBootTest(classes = IrkallaApplication.class)
+
+import org.apache.camel.test.spring.junit5.CamelSpringBootTest;
+
+import org.junit.jupiter.api.AfterEach;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.test.context.ActiveProfiles;
+
+@CamelSpringBootTest
+@org.apache.camel.test.spring.junit5.UseAdviceWith
+@ActiveProfiles({"default",  "in-memory-blobstore", "test","google-pubsub-autocreate", "no-kafka"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public class RouteBuilderIntegrationTestBase {
 
     @Autowired
-    protected ModelCamelContext context;
+    protected CamelContext context;
+
+    @AfterEach
+    void stopContext() {
+        context.stop();
+    }
+
+
 
 }
