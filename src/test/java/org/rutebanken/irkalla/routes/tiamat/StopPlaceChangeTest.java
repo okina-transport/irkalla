@@ -16,7 +16,8 @@
 package org.rutebanken.irkalla.routes.tiamat;
 
 import org.junit.Assert;
-import org.junit.Test;
+
+import org.junit.jupiter.api.Test;
 import org.rutebanken.irkalla.domain.CrudAction;
 import org.rutebanken.irkalla.routes.tiamat.graphql.model.GraphqlGeometry;
 import org.rutebanken.irkalla.routes.tiamat.graphql.model.Name;

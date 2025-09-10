@@ -15,8 +15,9 @@
 
 package org.rutebanken.irkalla.routes.etcd;
 
+import jakarta.annotation.PostConstruct;
 import org.rutebanken.irkalla.routes.BaseRouteBuilder;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Component;
 
 import java.time.Instant;
@@ -25,7 +26,7 @@ import java.time.Instant;
  * In memory impl of sync status routes. For testing without etcd.
  */
 @Component
-@ConditionalOnProperty(name = "sync.status.in.memory", havingValue = "true")
+@Profile("in-memory")
 public class InMemorySyncStatusRouteBuilder extends BaseRouteBuilder {
 
     private Instant stopPlaceSyncedUntil;
@@ -33,6 +34,7 @@ public class InMemorySyncStatusRouteBuilder extends BaseRouteBuilder {
     @Override
     public void configure() throws Exception {
         from("direct:getSyncStatusUntilTime")
+                .removeHeaders("CamelHttp*")
                 .process(e -> e.getIn().setBody(stopPlaceSyncedUntil))
                 .routeId("get-sync-status-until");
 
@@ -40,4 +42,10 @@ public class InMemorySyncStatusRouteBuilder extends BaseRouteBuilder {
                 .process(e -> stopPlaceSyncedUntil = e.getIn().getBody(Instant.class))
                 .routeId("set-sync-status-until");
     }
+
+    @PostConstruct
+    public void init() {
+        log.info("InMemorySyncStatusRouteBuilder initialized with sync.status.in.memory=true");
+    }
+
 }

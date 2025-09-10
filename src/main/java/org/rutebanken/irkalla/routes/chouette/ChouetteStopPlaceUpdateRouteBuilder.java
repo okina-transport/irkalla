@@ -16,18 +16,22 @@
 package org.rutebanken.irkalla.routes.chouette;
 
 import org.apache.activemq.ScheduledMessage;
-import org.apache.activemq.command.ActiveMQMessage;
+
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.component.http4.HttpMethods;
-import org.apache.camel.http.common.HttpOperationFailedException;
+
+import org.apache.camel.Message;
+
+import org.apache.camel.http.base.HttpOperationFailedException;
+import org.apache.camel.http.common.HttpMethods;
 import org.rutebanken.irkalla.Constants;
-import org.rutebanken.irkalla.IrkallaException;
+
 import org.rutebanken.irkalla.routes.BaseRouteBuilder;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import java.io.IOException;
+
 import java.time.Instant;
 import java.util.Collections;
 import java.util.List;
@@ -38,7 +42,7 @@ import static org.rutebanken.irkalla.Constants.HEADER_SYNC_STATUS_TO;
 import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_DELTA;
 import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_FULL;
 import static org.rutebanken.irkalla.Constants.SYNC_OPERATION_FULL_WITH_DELETE_UNUSED_FIRST;
-import static org.rutebanken.irkalla.util.Http4URL.toHttp4Url;
+
 
 @Component
 public class ChouetteStopPlaceUpdateRouteBuilder extends BaseRouteBuilder {
@@ -64,21 +68,23 @@ public class ChouetteStopPlaceUpdateRouteBuilder extends BaseRouteBuilder {
     public void configure() throws Exception {
         super.configure();
 
-        from("quartz2://irkalla/stopPlaceDeltaSync?cron=" + deltaSyncCronSchedule + "&trigger.timeZone=Europe/Oslo")
+        from("quartz://irkalla/stopPlaceDeltaSync?cron=" + deltaSyncCronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{chouette.sync.stop.place.autoStartup:true}}")
                 .log(LoggingLevel.DEBUG, "Quartz triggers delta sync of changed stop places.")
                 .setHeader(HEADER_SYNC_OPERATION, constant("DELTA"))
-                .inOnly("activemq:queue:ChouetteStopPlaceSyncQueue")
+                .setExchangePattern(ExchangePattern.InOnly)
+                .to("activemq:queue:ChouetteStopPlaceSyncQueue")
                 .routeId("chouette-synchronize-stop-places-delta-quartz");
 
-        from("quartz2://irkalla/stopPlaceSync?cron=" + fullSyncCronSchedule + "&trigger.timeZone=Europe/Oslo")
+        from("quartz://irkalla/stopPlaceSync?cron=" + fullSyncCronSchedule + "&trigger.timeZone=Europe/Oslo")
                 .autoStartup("{{chouette.sync.stop.place.autoStartup:true}}")
                 .log(LoggingLevel.DEBUG, "Quartz triggers full sync of changed stop places.")
                 .setHeader(HEADER_SYNC_OPERATION, constant(SYNC_OPERATION_FULL_WITH_DELETE_UNUSED_FIRST))
-                .inOnly("activemq:queue:ChouetteStopPlaceSyncQueue")
+                .setExchangePattern(ExchangePattern.InOnly)
+                .to("activemq:queue:ChouetteStopPlaceSyncQueue")
                 .routeId("chouette-synchronize-stop-places-full-quartz");
 
-        singletonFrom("activemq:queue:ChouetteStopPlaceSyncQueue?transacted=true&messageListenerContainerFactoryRef=batchListenerContainerFactory")
+        singletonFrom("activemq:queue:ChouetteStopPlaceSyncQueue?transacted=true")
                 .transacted()
                 .process(e -> mergeActiveMQMessages(e))
                 .choice()
@@ -144,14 +150,14 @@ public class ChouetteStopPlaceUpdateRouteBuilder extends BaseRouteBuilder {
                 .setBody(constant(null))
                 .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.DELETE))
                 .doTry()
-                .toD(toHttp4Url(chouetteUrl) + "/chouette_iev/stop_place/unused")
+                .toD(chouetteUrl + "/chouette_iev/stop_place/unused")
                 .setHeader(HEADER_SYNC_OPERATION, constant(SYNC_OPERATION_FULL))
                 .log(LoggingLevel.INFO, "Deleting unused stop places in Chouette completed.")
                 .to("activemq:queue:ChouetteStopPlaceSyncQueue")
                 .doCatch(HttpOperationFailedException.class).onWhen(exchange -> {
-            HttpOperationFailedException ex = exchange.getException(HttpOperationFailedException.class);
-            return (ex.getStatusCode() == 423);
-        })
+                    HttpOperationFailedException ex = exchange.getException(HttpOperationFailedException.class);
+                    return (ex.getStatusCode() == 423);
+                })
                 .log(LoggingLevel.INFO, "Unable to delete unused stop places because Chouette is busy, retry in " + retryDelay + " ms")
                 .setHeader(ScheduledMessage.AMQ_SCHEDULED_DELAY, constant(retryDelay))
                 .setBody(constant(null))
@@ -165,11 +171,11 @@ public class ChouetteStopPlaceUpdateRouteBuilder extends BaseRouteBuilder {
                 .removeHeaders("CamelHttp*")
                 .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.POST))
                 .doTry()
-                .toD(toHttp4Url(chouetteUrl) + "/chouette_iev/stop_place")
+                .toD(chouetteUrl + "/chouette_iev/stop_place")
                 .doCatch(HttpOperationFailedException.class).onWhen(exchange -> {
-            HttpOperationFailedException ex = exchange.getException(HttpOperationFailedException.class);
-            return (ex.getStatusCode() == 423);
-        })
+                    HttpOperationFailedException ex = exchange.getException(HttpOperationFailedException.class);
+                    return (ex.getStatusCode() == 423);
+                })
                 .log(LoggingLevel.INFO, "Unable to sync stop places because Chouette is busy, retry in " + retryDelay + " ms")
                 .setHeader(ScheduledMessage.AMQ_SCHEDULED_DELAY, constant(retryDelay))
                 .setBody(constant(null))
@@ -188,22 +194,29 @@ public class ChouetteStopPlaceUpdateRouteBuilder extends BaseRouteBuilder {
      * - Delta sync in other cases, using first msg with url set (indicating ongoing job) if any
      */
     private void mergeActiveMQMessages(Exchange e) {
-        List<ActiveMQMessage> msgList = e.getIn().getBody(List.class);
+
+
+        List<Message> msgList = e.getIn().getBody(List.class);
         Collections.sort(msgList, new SyncMsgComparator());
 
-        ActiveMQMessage topPriMsg = msgList.get(0);
-        try {
-            Object syncOperation = topPriMsg.getProperty(HEADER_SYNC_OPERATION);
-            if (syncOperation == null) {
-                e.getIn().setHeader(HEADER_SYNC_OPERATION, SYNC_OPERATION_DELTA);
-            } else {
-                e.getIn().setHeader(HEADER_SYNC_OPERATION, syncOperation);
-                e.getIn().setHeader(HEADER_SYNC_STATUS_TO, topPriMsg.getProperty(HEADER_SYNC_STATUS_TO));
-                e.getIn().setHeader(HEADER_NEXT_BATCH_URL, topPriMsg.getProperty(HEADER_NEXT_BATCH_URL));
-            }
-        } catch (IOException ioE) {
-            throw new IrkallaException("Unable to get sync operation header as property from ActiveMQMessage: " + ioE.getMessage(), ioE);
+
+        if(msgList.isEmpty()){
+            e.getIn().setHeader(HEADER_SYNC_OPERATION, SYNC_OPERATION_DELTA);
+            return;
         }
+
+
+        Message topPriMsg = msgList.get(0);
+
+        Object syncOperation = topPriMsg.getHeader(HEADER_SYNC_OPERATION);
+        if (syncOperation == null) {
+            e.getIn().setHeader(HEADER_SYNC_OPERATION, SYNC_OPERATION_DELTA);
+        } else {
+            e.getIn().setHeader(HEADER_SYNC_OPERATION, syncOperation);
+            e.getIn().setHeader(HEADER_SYNC_STATUS_TO, topPriMsg.getHeader(HEADER_SYNC_STATUS_TO));
+            e.getIn().setHeader(HEADER_NEXT_BATCH_URL, topPriMsg.getHeader(HEADER_NEXT_BATCH_URL));
+        }
+
     }
 
 }

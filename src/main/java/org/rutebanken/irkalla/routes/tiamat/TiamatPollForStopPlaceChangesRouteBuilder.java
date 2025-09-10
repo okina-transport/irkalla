@@ -17,7 +17,8 @@ package org.rutebanken.irkalla.routes.tiamat;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.LoggingLevel;
-import org.apache.camel.component.http4.HttpMethods;
+
+import org.apache.camel.http.common.HttpMethods;
 import org.apache.http.client.utils.URIBuilder;
 import org.rutebanken.irkalla.Constants;
 import org.rutebanken.irkalla.routes.BaseRouteBuilder;
@@ -30,7 +31,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
 import static org.rutebanken.irkalla.Constants.HEADER_NEXT_BATCH_URL;
-import static org.rutebanken.irkalla.util.Http4URL.toHttp4Url;
+
 
 @Component
 public class TiamatPollForStopPlaceChangesRouteBuilder extends BaseRouteBuilder {
@@ -88,7 +89,7 @@ public class TiamatPollForStopPlaceChangesRouteBuilder extends BaseRouteBuilder 
         Long fromAsEpocMillis = e.getIn().getHeader(Constants.HEADER_SYNC_STATUS_FROM, Long.class);
         Long toAsEpocMillis = e.getIn().getHeader(Constants.HEADER_SYNC_STATUS_TO, Long.class);
 
-        URIBuilder uriBuilder = new URIBuilder(toHttp4Url(tiamatUrl) + publicationDeliveryPath);
+        URIBuilder uriBuilder = new URIBuilder(tiamatUrl + publicationDeliveryPath);
 
         uriBuilder.addParameter("topographicPlaceExportMode", "NONE");
         uriBuilder.addParameter("tariffZoneExportMode", "NONE");
@@ -113,9 +114,9 @@ public class TiamatPollForStopPlaceChangesRouteBuilder extends BaseRouteBuilder 
      * URL to next page of result set is encoded as Link header (rel="next")
      */
     private void setURLToNextBatch(Exchange e) {
-        e.getIn().setHeader(HEADER_NEXT_BATCH_URL, toHttp4Url(e.getIn().getHeader("Link", String.class)
+        e.getIn().setHeader(HEADER_NEXT_BATCH_URL, e.getIn().getHeader("Link", String.class)
                 .replaceFirst("\\<", "")
-                .replaceFirst("\\>; rel=\"next\"", "")));
+                .replaceFirst("\\>; rel=\"next\"", ""));
     }
 
 }

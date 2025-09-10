@@ -16,6 +16,7 @@
 package org.rutebanken.irkalla.routes;
 
 import org.apache.camel.Exchange;
+import org.apache.camel.ExchangePattern;
 import org.apache.camel.model.rest.RestBindingMode;
 import org.apache.camel.model.rest.RestParamType;
 import org.apache.camel.model.rest.RestPropertyDefinition;
@@ -70,11 +71,9 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
 
         restConfiguration().setCorsHeaders(Collections.singletonList(corsAllowedHeaders));
 
-        restConfiguration()
-                .component("jetty")
+        restConfiguration().inlineRoutes(false)
+                .component("servlet")
                 .bindingMode(RestBindingMode.json)
-                .endpointProperty("filtersRef", "keycloakPreAuthActionsFilter,keycloakAuthenticationProcessingFilter")
-                .endpointProperty("sessionSupport", "true")
                 .endpointProperty("matchOnUriPrefix", "true")
                 .enableCORS(true)
                 .dataFormatProperty("prettyPrint", "true")
@@ -92,39 +91,46 @@ public class AdminRestRouteBuilder extends BaseRouteBuilder {
                 .description("Get time for which synchronization is up to date")
                 .responseMessage().code(200).endResponseMessage()
                 .responseMessage().code(500).message("Internal error").endResponseMessage()
-                .route().routeId("admin-chouette-synchronize-stop-places-status")
-                .removeHeaders("CamelHttp*")
+                .routeId("admin-chouette-synchronize-stop-places-status")
                 .to("direct:getSyncStatusUntilTime")
-                .endRest()
+
 
                 .post("/delta")
                 .description("Synchronize new changes for stop places from Tiamat to Chouette")
                 .responseMessage().code(200).endResponseMessage()
                 .responseMessage().code(500).message("Internal error").endResponseMessage()
-                .route().routeId("admin-chouette-synchronize-stop-places-delta")
-                .process(e -> authorize(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
-                .removeHeaders("CamelHttp*")
-                .setHeader(HEADER_SYNC_OPERATION, constant(SYNC_OPERATION_DELTA))
-                .inOnly("activemq:queue:ChouetteStopPlaceSyncQueue")
-                .setBody(constant(null))
-                .endRest()
+                .to("direct:adminChouetteSynchronizeStopPlacesDelta")
+
+
                 .post("/full")
                 .description("Full synchronization of all stop places from Tiamat to Chouette")
                 .param().name("cleanFirst").type(RestParamType.query).description("Whether or not not in use stop places should be deleted first").dataType("boolean").endParam()
                 .responseMessage().code(200).endResponseMessage()
                 .responseMessage().code(500).message("Internal error").endResponseMessage()
-                .route().routeId("admin-chouette-synchronize-stop-places-full")
+                .to("direct:adminChouetteSynchronizeStopPlacesFull");
+
+        from("direct:adminChouetteSynchronizeStopPlacesFull")
+                .routeId("admin-chouette-synchronize-stop-places-full")
                 .process(e -> authorize(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
                 .removeHeaders("CamelHttp*")
                 .choice()
                 .when(simple("${header.cleanFirst}"))
-                    .setHeader(HEADER_SYNC_OPERATION, constant(SYNC_OPERATION_FULL_WITH_DELETE_UNUSED_FIRST))
+                .setHeader(HEADER_SYNC_OPERATION, constant(SYNC_OPERATION_FULL_WITH_DELETE_UNUSED_FIRST))
                 .otherwise()
-                    .setHeader(HEADER_SYNC_OPERATION, constant(SYNC_OPERATION_FULL))
+                .setHeader(HEADER_SYNC_OPERATION, constant(SYNC_OPERATION_FULL))
                 .end()
-                .inOnly("activemq:queue:ChouetteStopPlaceSyncQueue")
-                .setBody(constant(null))
-                .endRest();
+                .to(ExchangePattern.InOnly, "activemq:queue:ChouetteStopPlaceSyncQueue")
+                .setBody(constant(null));
+
+
+        from("direct:adminChouetteSynchronizeStopPlacesDelta")
+                .routeId("admin-chouette-synchronize-stop-places-delta")
+                .process(e -> authorize(AuthorizationConstants.ROLE_ROUTE_DATA_ADMIN))
+                .removeHeaders("CamelHttp*")
+                .setHeader(HEADER_SYNC_OPERATION, constant(SYNC_OPERATION_DELTA))
+                .to(ExchangePattern.InOnly, "activemq:queue:ChouetteStopPlaceSyncQueue")
+                .setBody(constant(null));
+
 
 
     }
