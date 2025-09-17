@@ -22,7 +22,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
     <parent>
         <groupId>com.okina.springboot</groupId>
         <artifactId>superpom</artifactId>
-        <version>2.0.13-SNAPSHOT</version>
+        <version>2.0.20-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -42,30 +42,15 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-
         <!-- versions for use in mvn plugins as we cannot inherit them from a BOM -->
         <docker.maven.plugin.version>0.45.1</docker.maven.plugin.version>
-
-
-
-
-
         <docker.cleanup>none</docker.cleanup>
-
-
-
         <maven.compiler.target>21</maven.compiler.target>
         <maven.compiler.source>21</maven.compiler.source>
-
         <maven-javadoc-plugin.version>2.9.1</maven-javadoc-plugin.version>
         <docker.port.container.jolokia>8080</docker.port.container.jolokia>
-
-        <keycloak.version>26.0.6</keycloak.version>
-<!--        <jetty.version>12.1.0</jetty.version>-->
         <okina.helpers.version>1.0.33</okina.helpers.version>
-        <camel.version>4.14.0</camel.version>
         <hazelcast-version>5.5.0</hazelcast-version>
-        <camel-hazelcast-version>4.14.0</camel-hazelcast-version>
     </properties>
 
     <dependencyManagement>
@@ -75,7 +60,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
             <dependency>
                 <groupId>org.apache.camel</groupId>
                 <artifactId>camel-hazelcast</artifactId>
-                <version>${camel-hazelcast-version}</version>
+                <version>${camel-version}</version>
             </dependency>
             <dependency>
                 <groupId>com.hazelcast</groupId>
@@ -154,7 +139,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
             <dependency>
                 <groupId>com.graphql-java</groupId>
                 <artifactId>graphql-java</artifactId>
-                <version>24.2</version>
+                <version>24.3</version>
             </dependency>
             <dependency>
                 <groupId>org.wololo</groupId>
@@ -172,7 +157,7 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
             <dependency>
                 <groupId>org.apache.camel.springboot</groupId>
                 <artifactId>camel-spring-boot-bom</artifactId>
-                <version>${camel.version}</version>
+                <version>${camel-version}</version>
                 <type>pom</type>
                 <scope>import</scope>
             </dependency>
@@ -194,22 +179,22 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-http-starter</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-spring-boot-starter</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-servlet-starter</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-openapi-java-starter</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
             <exclusions>
                 <exclusion>
                     <artifactId>jsr311-api</artifactId>
@@ -300,13 +285,13 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-spring-boot</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-jackson-starter</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
         </dependency>
 
 
@@ -318,24 +303,24 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-jsonpath-starter</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-jms</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-activemq</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
         </dependency>
 
 
         <dependency>
             <groupId>org.apache.camel.springboot</groupId>
             <artifactId>camel-quartz-starter</artifactId>
-            <version>${camel.version}</version>
+            <version>${camel-version}</version>
         </dependency>
         <dependency>
             <groupId>org.keycloak</groupId>
@@ -354,7 +339,6 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         <dependency>
             <groupId>org.apache.camel</groupId>
             <artifactId>camel-test-spring-junit5</artifactId>
-            <version>4.14.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -380,17 +364,15 @@ Inspired by: https://github.com/fabric8io/ipaas-quickstarts/
         <dependency>
             <groupId>org.keycloak</groupId>
             <artifactId>keycloak-admin-client</artifactId>
-            <version>${keycloak.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-client</artifactId>
-            <version>7.0.0.Beta1</version>
         </dependency>
         <dependency>
             <groupId>org.jboss.resteasy</groupId>
             <artifactId>resteasy-jackson2-provider</artifactId>
-            <version>7.0.0.Beta1</version>
+            <version>${resteasy-client.version}</version>
         </dependency>
     </dependencies>
 
