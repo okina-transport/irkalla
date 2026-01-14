@@ -22,6 +22,8 @@ import org.apache.camel.http.common.HttpMethods;
 import org.apache.http.client.utils.URIBuilder;
 import org.rutebanken.irkalla.Constants;
 import org.rutebanken.irkalla.routes.BaseRouteBuilder;
+import org.rutebanken.irkalla.service.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -30,6 +32,7 @@ import java.time.Instant;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 
+import static org.rutebanken.irkalla.Constants.AUTHORIZATION_HEADER;
 import static org.rutebanken.irkalla.Constants.HEADER_NEXT_BATCH_URL;
 
 
@@ -47,6 +50,9 @@ public class TiamatPollForStopPlaceChangesRouteBuilder extends BaseRouteBuilder 
 
     @Value("${sync.stop.place.batch.size:1000}")
     private int batchSize;
+
+    @Autowired
+    private TokenService tokenService;
 
 
     private static final String DATE_TIME_PATTERN = "yyyy-MM-dd'T'HH:mm:ss.SSSXXXX";
@@ -71,6 +77,7 @@ public class TiamatPollForStopPlaceChangesRouteBuilder extends BaseRouteBuilder 
                 .log(LoggingLevel.INFO, "Fetching batch of changed stop places: ${header." + HEADER_NEXT_BATCH_URL + "}")
                 .removeHeader("Link")
                 .setHeader(Exchange.HTTP_METHOD, constant(HttpMethods.GET))
+                .process(e-> e.getIn().setHeader(AUTHORIZATION_HEADER, "Bearer " + tokenService.getToken()))
                 .setBody(constant(null))
                 .toD("${header." + HEADER_NEXT_BATCH_URL + "}")
                 .removeHeader(HEADER_NEXT_BATCH_URL)
